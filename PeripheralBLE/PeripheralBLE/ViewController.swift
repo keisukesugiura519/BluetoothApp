@@ -46,6 +46,7 @@ class ViewController: UIViewController, CBPeripheralManagerDelegate {
         
         // サービスを追加
         peripheralManager.add(service)
+        print("service add ok")
     }
     
     private func startAdvertise() {
@@ -107,6 +108,7 @@ class ViewController: UIViewController, CBPeripheralManagerDelegate {
     
     @IBAction func advertiseBtnTapped(sender: UIButton) {
         if !peripheralManager.isAdvertising {
+            print("srart Adv")
             startAdvertise()
         } else {
             stopAdvertise()
