@@ -23,7 +23,6 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         
         // セントラルマネージャ初期化
         centralManager = CBCentralManager(delegate: self, queue: nil)
-        print("初期化した〜！")
         Button.setTitle("Scan Start", for: .normal)
     }
     
@@ -31,32 +30,25 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
 
         super.didReceiveMemoryWarning()
     }
-    
-    // =========================================================================
-    // MARK: CBCentralManagerDelegate
-    
+
     // セントラルマネージャの状態が変化すると呼ばれる
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         print("state: \(central.state)")
     }
     
     // 周辺にあるデバイスを発見すると呼ばれる
-    private func centralManager(central: CBCentralManager,
-                        didDiscoverPeripheral peripheral: CBPeripheral,
-                        advertisementData: [String : AnyObject],
-                        RSSI: NSNumber)
+    func centralManager(_ central: CBCentralManager,didDiscover peripheral: CBPeripheral,advertisementData: [String : Any],rssi RSSI: NSNumber)
     {
         print("発見したBLEデバイス: \(peripheral)")
         
-        if let name = peripheral.name, name.hasPrefix("iPad (2)") {
+        if let name = peripheral.name, name.hasPrefix("Test Device") {
             self.peripheral = peripheral
             centralManager.connect(peripheral, options: nil)
         }
     }
     
     // ペリフェラルへの接続が成功すると呼ばれる
-    func centralManager(central: CBCentralManager,
-                        didConnectPeripheral peripheral: CBPeripheral)
+    func centralManager(_ central: CBCentralManager,didConnect peripheral: CBPeripheral)
     {
         print("接続成功！")
         
@@ -70,16 +62,11 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
     
     // ペリフェラルへの接続が失敗すると呼ばれる
-    private func centralManager(central: CBCentralManager,
-                        didFailToConnectPeripheral peripheral: CBPeripheral,
-                        error: NSError?)
+    func centralManager(_ central: CBCentralManager,didFailToConnect peripheral: CBPeripheral,error: Error?)
     {
         print("接続失敗・・・")
     }
-    
-    // =========================================================================
-    // MARK:CBPeripheralDelegate
-    
+
     // サービス発見時に呼ばれる
     private func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
         if let error = error {
@@ -109,10 +96,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         let characteristics = service.characteristics
         print("\(String(describing: characteristics?.count)) 個のキャラクタリスティックを発見！ \(String(describing: characteristics))")
     }
-    
-    // =========================================================================
-    // MARK: Actions
-    
+
     @IBAction func scanBtnTapped(sender: UIButton) {
         if !isScanning {
             isScanning = true

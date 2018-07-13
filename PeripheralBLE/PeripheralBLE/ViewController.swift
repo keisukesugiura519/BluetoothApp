@@ -16,10 +16,8 @@ class ViewController: UIViewController, CBPeripheralManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // ペリフェラルマネージャ初期化
+        // peripheralManager initialzation
         peripheralManager = CBPeripheralManager(delegate: self, queue: nil, options: nil)
-        print("ペリフェラルマネージャー初期化したったー")
     }
     
     override func didReceiveMemoryWarning() {
@@ -30,23 +28,22 @@ class ViewController: UIViewController, CBPeripheralManagerDelegate {
     // MARK: Private
     
     private func publishservice () {
-        // サービスを作成
+        // Create service
         let serviceUUID = CBUUID(string: "E371F980-C783-4BE7-84B6-65A71748F31A")
         let service = CBMutableService(type: serviceUUID, primary: true)
         
-        // キャラクタリスティックを作成
+        // Create characteristic
         let characteristicUUID = CBUUID(string: "AA2C6674-A021-42CF-A8F2-6EBBC7EC93D6")
         let characteristic = CBMutableCharacteristic(type: characteristicUUID,
             properties: .read,
             value: nil,
             permissions: .readable)
         
-        // キャラクタリスティックをサービスにセット
+        // set a characteristic
         service.characteristics = [characteristic]
         
-        // サービスを追加
+        // add a service
         peripheralManager.add(service)
-        print("service add ok")
     }
     
     private func startAdvertise() {
@@ -66,9 +63,6 @@ class ViewController: UIViewController, CBPeripheralManagerDelegate {
         self.advertiseBtn.setTitle("START ADVERTISING", for: UIControl.State.normal)
     }
     
-    // =========================================================================
-    // MARK: CBPeripheralManagerDelegate
-    
     // ペリフェラルマネージャの状態が変化すると呼ばれる
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         print("state: \(peripheral.state)")
@@ -83,32 +77,28 @@ class ViewController: UIViewController, CBPeripheralManagerDelegate {
     }
     
     // サービス追加処理が完了すると呼ばれる
-    func peripheralManager(peripheral: CBPeripheralManager, didAddService service: CBService, error: NSError?) {
+    func peripheralManager(_ peripheral: CBPeripheralManager, didAdd service: CBService, error: Error?) {
         if let error = error {
-            print("サービス追加失敗！ error: \(error)")
+            print("Faild service addition error: \(error)")
             return
         }
-        print("サービス追加成功！")
+        print("Successful service addition")
         
         // アドバタイズ開始
         startAdvertise()
     }
     
     // アドバタイズ開始処理が完了すると呼ばれる
-    private func peripheralManagerDidStartAdvertising(peripheral: CBPeripheralManager, error: NSError?) {
+    func peripheralManagerDidStartAdvertising(_ peripheral: CBPeripheralManager, error: Error?) {
         if let error = error {
-            print("アドバタイズ開始失敗！ error: \(error)")
+            print("Start Advertise Failed！ error: \(error)")
             return
         }
-        print("アドバタイズ開始成功！")
+        print("Sucssessful advertise start!")
     }
-    
-    // =========================================================================
-    // MARK: Actions
     
     @IBAction func advertiseBtnTapped(sender: UIButton) {
         if !peripheralManager.isAdvertising {
-            print("srart Adv")
             startAdvertise()
         } else {
             stopAdvertise()
